@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -41,13 +40,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     List<String> myDataset, myUrl;
-    Button button1,button2,button3,button4, buttonPrevious, buttonNext,buttonSearch,buttonSearchReset;
+    Button button1,button2,button3,button4, buttonPrevious, buttonNext;
+    ImageView buttonSearch,buttonBell;
     TextView text_page;
     EditText editTextSearch;
     int colorNotAcitve, colorAcitve;
     InputMethodManager imm;
 
-    private WebView webView_schedule;
+    private WebView webView_schedule, webView_cyber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,23 +64,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabHostSetup();
         setupNoticeTab();
         setupSchedule();
+        setupCyber();
+    }
+
+    private void setupCyber() {
+        webView_cyber = (WebView) findViewById(R.id.webView_cyber);
+        webView_cyber.setWebViewClient(new WebViewClient());
+        webView_cyber.getSettings().setJavaScriptEnabled(true);
+        webView_cyber.getSettings().setLoadWithOverviewMode(true);
+        webView_cyber.getSettings().setUseWideViewPort(true);
+        webView_cyber.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView_cyber.setScrollbarFadingEnabled(true);
+
+        webView_cyber.loadUrl("https://e-cyber.catholic.ac.kr/");
     }
 
     private void setupSchedule() {
         webView_schedule = (WebView) findViewById(R.id.webView_schedule);
         webView_schedule.setWebViewClient(new WebViewClient());
         webView_schedule.getSettings().setJavaScriptEnabled(true);
+        webView_schedule.getSettings().setLoadWithOverviewMode(true);
+        webView_schedule.getSettings().setUseWideViewPort(true);
+        webView_schedule.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView_schedule.setScrollbarFadingEnabled(true);
 
         webView_schedule.loadUrl("https://haksa.catholic.ac.kr/haksa/schedule01_8.html");
     }
 
     private void setupNoticeTab() {
-        colorAcitve = ContextCompat.getColor(this, R.color.colorPrimary);
-        colorNotAcitve = 0xffffffff;
+        colorAcitve = 0xffffffff;
+        colorNotAcitve = ContextCompat.getColor(this, R.color.colorPrimary);
 
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
 
         sectionNum = "1";
@@ -115,8 +130,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button2.setBackgroundColor(colorNotAcitve);
         button3.setBackgroundColor(colorNotAcitve);
         button4.setBackgroundColor(colorNotAcitve);
-        buttonSearchReset = (Button) findViewById(R.id.button_search_reset);
-        buttonSearchReset.setOnClickListener(this);
+        buttonBell = (ImageView) findViewById(R.id.button_bell);
+        buttonBell.setOnClickListener(this);
         buttonPrevious = (Button) findViewById(R.id.button_previous);
         buttonNext = (Button) findViewById(R.id.button_next);
         buttonPrevious.setOnClickListener(this);
@@ -124,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         text_page = (TextView) findViewById(R.id.text_page);
 
-        buttonSearch = (Button) findViewById(R.id.button_search);
+        buttonSearch = (ImageView) findViewById(R.id.button_search);
         buttonSearch.setOnClickListener(this);
         imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         editTextSearch = (EditText) findViewById(R.id.editText_search);
@@ -197,6 +212,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             button2.setBackgroundColor(colorNotAcitve);
             button3.setBackgroundColor(colorNotAcitve);
             button4.setBackgroundColor(colorNotAcitve);
+            button1.setTextColor(0xff000000);
+            button2.setTextColor(0xffffffff);
+            button3.setTextColor(0xffffffff);
+            button4.setTextColor(0xffffffff);
         } else if(v == button2){
             sectionNum = "2";
             pageNum = "1";
@@ -204,6 +223,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             button2.setBackgroundColor(colorAcitve);
             button3.setBackgroundColor(colorNotAcitve);
             button4.setBackgroundColor(colorNotAcitve);
+            button1.setTextColor(0xffffffff);
+            button2.setTextColor(0xff000000);
+            button3.setTextColor(0xffffffff);
+            button4.setTextColor(0xffffffff);
         } else if(v == button3){
             sectionNum = "3";
             pageNum = "1";
@@ -211,6 +234,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             button2.setBackgroundColor(colorNotAcitve);
             button3.setBackgroundColor(colorAcitve);
             button4.setBackgroundColor(colorNotAcitve);
+            button1.setTextColor(0xffffffff);
+            button2.setTextColor(0xffffffff);
+            button3.setTextColor(0xff000000);
+            button4.setTextColor(0xffffffff);
         } else if(v == button4){
             sectionNum = "4";
             pageNum = "1";
@@ -218,6 +245,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             button2.setBackgroundColor(colorNotAcitve);
             button3.setBackgroundColor(colorNotAcitve);
             button4.setBackgroundColor(colorAcitve);
+            button1.setTextColor(0xffffffff);
+            button2.setTextColor(0xffffffff);
+            button3.setTextColor(0xffffffff);
+            button4.setTextColor(0xff000000);
         } else if(v == buttonPrevious){
             if(Integer.parseInt(pageNum)<=1)
                 Toast.makeText(getApplicationContext(),"이전 장이 없습니다.",Toast.LENGTH_LONG).show();
@@ -227,16 +258,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else if(v == buttonNext){
             if(Integer.parseInt(pageNum)>=10)
-                Toast.makeText(getApplicationContext(),"20장 이후는 지원하지 않습니다 인터넷을 사용해주세요.",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"10장 이후는 지원하지 않습니다 인터넷을 사용해주세요.",Toast.LENGTH_LONG).show();
             else{
                 pageNum = Integer.toString(Integer.parseInt(pageNum)+1);
                 //text_page.setText(pageNum);
             }
         } else if(v == buttonSearch){
             searchValue = editTextSearch.getText().toString();
-        } else if(v == buttonSearchReset) {
-            searchValue = "";
-            editTextSearch.setText("");
+        } else if(v == buttonBell) {
+            // 알림기능 추가
         }
         text_page.setText(pageNum);
 

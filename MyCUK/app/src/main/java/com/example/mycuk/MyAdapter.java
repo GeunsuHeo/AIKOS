@@ -95,8 +95,8 @@ class MyltemDecoration extends RecyclerView.ItemDecoration{
         int index = parent.getChildAdapterPosition(view)+1;
         outRect.set(20,20,20,20);
 
-        view.setBackgroundColor(0x2200498C);
-        ViewCompat.setElevation(view, 20.0f);
+        view.setBackgroundColor(0xffffffff);
+        //ViewCompat.setElevation(view, 1.0f);
     }
 
     @Override
