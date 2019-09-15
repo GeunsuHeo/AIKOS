@@ -190,11 +190,42 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <WebView
-                        android:id="@+id/webView_cyber"
+                    <TextView
+                        android:layout_height="0dp"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        />
+                        android:layout_margin="20dp"
+                        android:layout_weight="3"
+                        android:background="#8800ff00"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:text="과제 / 할 일 모아보기"
+                            android:fontFamily="@font/main_font"
+                            android:textSize="17dp"/>
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_height="2dp"
+                            android:background="@color/textMain"/>
+                        <TextView
+                            android:id="@+id/spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:background="#8800ffff"
+                            />
+                    </LinearLayout>
+
+
 
                 </LinearLayout>
 
