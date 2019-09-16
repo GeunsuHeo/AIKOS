@@ -1,6 +1,7 @@
 package com.example.mycuk;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -19,6 +20,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -40,10 +42,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     List<String> myDataset, myUrl;
-    Button button1,button2,button3,button4, buttonPrevious, buttonNext;
+    Button button1,button2,button3,button4, buttonPrevious, buttonNext, buttonLib1, buttonLib2, buttonLib3, buttonLib4;
+    ImageButton buttonLibSearch;
     ImageView buttonSearch,buttonBell;
     TextView text_page;
-    EditText editTextSearch;
+    EditText editTextSearch, editTextLibSearch;
     int colorNotAcitve, colorAcitve;
     InputMethodManager imm;
 
@@ -65,7 +68,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupNoticeTab();
         setupSchedule();
         setupCyber();
+        setupLibrary();
     }
+
+
 
     private void setupCyber() {
         webView_cyber = (WebView) findViewById(R.id.webView_cyber);
@@ -143,8 +149,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonSearch.setOnClickListener(this);
         imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         editTextSearch = (EditText) findViewById(R.id.editText_search);
+
     }
 
+    private void setupLibrary() {
+        buttonLibSearch = (ImageButton) findViewById(R.id.lib_search_btn);
+        buttonLib1 = (Button) findViewById(R.id.lib_btn1);
+        buttonLib2 = (Button) findViewById(R.id.lib_btn2);
+        buttonLib3 = (Button) findViewById(R.id.lib_btn3);
+        buttonLib4 = (Button) findViewById(R.id.lib_btn4);
+
+        buttonLibSearch.setOnClickListener(this);
+        buttonLib1.setOnClickListener(this);
+        buttonLib2.setOnClickListener(this);
+        buttonLib3.setOnClickListener(this);
+        buttonLib4.setOnClickListener(this);
+
+        editTextLibSearch = (EditText) findViewById(R.id.editText_libSearch);
+    }
 
     private void tabHostSetup() {
         tabHost = (TabHost) findViewById(R.id.tabhost);
@@ -267,6 +289,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             searchValue = editTextSearch.getText().toString();
         } else if(v == buttonBell) {
             // 알림기능 추가
+        } else if(v == buttonLibSearch){
+            Intent intent = new Intent(getApplicationContext(), LIbActivity.class);
+            String url = "http://cuk-songsim-primo.hosted.exlibrisgroup.com/primo_library/libweb/action/search.do;jsessionid=88FF20581947A0375D8A6DB3C0420925?fn=search&ct=search&initialSearch=true&mode=Basic&tab=default_tab&indx=1&dum=true&srt=rank&vid=82KST-CUK_SONGSIM&frbg=&vl%28freeText0%29="
+                    + editTextLibSearch.getText().toString() + "&scp.scps=scope%3A%2882KST-CUK_SONGSIM_SFX%29%2Cscope%3A%2882KST-CUK_SONGSIM_LOCAL%29%2Cprimo_central_multiple_fe";
+            intent.putExtra("url", url); /*송신*/
+            startActivity(intent);
+        } else if(v == buttonLib1){
+            Intent intent = new Intent(getApplicationContext(), LIbActivity.class);
+            String url = "http://library.catholic.ac.kr/myloan/list";
+            intent.putExtra("url", url); /*송신*/
+            startActivity(intent);
+        } else if(v == buttonLib2){
+            Intent intent = new Intent(getApplicationContext(), LIbActivity.class);
+            String url = "http://203.229.203.240/8080/Domian5.asp";
+            intent.putExtra("url", url); /*송신*/
+            startActivity(intent);
+        } else if(v == buttonLib3){
+            Intent intent = new Intent(getApplicationContext(), LIbActivity.class);
+            String url = "http://library.catholic.ac.kr/purchaserequest/write";
+            intent.putExtra("url", url); /*송신*/
+            startActivity(intent);
+        } else if(v == buttonLib4){
+            Intent intent = new Intent(getApplicationContext(), LIbActivity.class);
+            String url = "http://library.catholic.ac.kr/myreserve/list";
+            intent.putExtra("url", url); /*송신*/
+            startActivity(intent);
         }
         text_page.setText(pageNum);
 
