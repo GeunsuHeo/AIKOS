@@ -234,6 +234,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/sp_btn1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="강의실 대여" />
+
+                        <Button
+                            android:id="@+id/sp_btn2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="인문 커뮤니티 라운지 세미나실 대여" />
+
+                        <Button
+                            android:id="@+id/sp_btn3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="중앙도서관 스터디룸 대여" />
+
+                        <Button
+                            android:id="@+id/sp_btn4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="중앙도서관 그룹연구실 대여" />
+                    </LinearLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
