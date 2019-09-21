@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     List<String> myDataset, myUrl;
-    Button button1,button2,button3,button4, buttonPrevious, buttonNext, buttonLib1, buttonLib2, buttonLib3, buttonLib4;
+    Button button1,button2,button3,button4, buttonPrevious, buttonNext, buttonLib1, buttonLib2, buttonLib3, buttonLib4, buttonSp1, buttonSp2, buttonSp3, buttonSp4;
     ImageButton buttonLibSearch;
     ImageView buttonSearch,buttonBell;
     TextView text_page;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupSchedule();
         setupCyber();
         setupLibrary();
+        setupSpace();
     }
 
 
@@ -166,6 +168,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonLib4.setOnClickListener(this);
 
         editTextLibSearch = (EditText) findViewById(R.id.editText_libSearch);
+    }
+    private void setupSpace() {
+        buttonSp1 = (Button) findViewById(R.id.sp_btn1);
+        buttonSp2 = (Button) findViewById(R.id.sp_btn2);
+        buttonSp3 = (Button) findViewById(R.id.sp_btn3);
+        buttonSp4 = (Button) findViewById(R.id.sp_btn4);
+
+
+        buttonSp1.setOnClickListener(this);
+        buttonSp2.setOnClickListener(this);
+        buttonSp3.setOnClickListener(this);
+        buttonSp4.setOnClickListener(this);
+
     }
 
     private void tabHostSetup() {
@@ -315,6 +330,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String url = "http://library.catholic.ac.kr/myreserve/list";
             intent.putExtra("url", url); /*송신*/
             startActivity(intent);
+        } else if(v == buttonSp1){
+            Intent intent = new Intent(getApplicationContext(), SpaceActivity.class);
+            String url = "http://www.catholic.ac.kr/front/classroomreglist.do";
+            intent.putExtra("url", url); /*송신*/
+            startActivity(intent);
+        } else if(v == buttonSp2) {
+            Intent intent = new Intent(Intent.ACTION_DIAL,Uri.parse("tel:0221644164"));
+            try {
+                startActivity(intent);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
         text_page.setText(pageNum);
 
