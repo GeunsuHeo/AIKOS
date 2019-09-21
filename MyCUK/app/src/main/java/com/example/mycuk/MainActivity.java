@@ -345,9 +345,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
         }
-
-
-
         text_page.setText(pageNum);
 
         imm.hideSoftInputFromWindow(editTextSearch.getWindowToken(), 0);
