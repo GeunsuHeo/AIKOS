@@ -76,15 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void setupCyber() {
-        webView_cyber = (WebView) findViewById(R.id.webView_cyber);
-        webView_cyber.setWebViewClient(new WebViewClient());
-        webView_cyber.getSettings().setJavaScriptEnabled(true);
-        webView_cyber.getSettings().setLoadWithOverviewMode(true);
-        webView_cyber.getSettings().setUseWideViewPort(true);
-        webView_cyber.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView_cyber.setScrollbarFadingEnabled(true);
 
-        webView_cyber.loadUrl("https://e-cyber.catholic.ac.kr/");
     }
 
     private void setupSchedule() {
