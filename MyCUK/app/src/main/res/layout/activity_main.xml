@@ -190,12 +190,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <TextView
+                    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/calendarView"
                         android:layout_height="0dp"
                         android:layout_width="match_parent"
                         android:layout_margin="20dp"
                         android:layout_weight="3"
-                        android:background="#8800ff00"/>
+                        app:mcv_showOtherDates="all"
+                        app:mcv_selectionColor="#00F"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"

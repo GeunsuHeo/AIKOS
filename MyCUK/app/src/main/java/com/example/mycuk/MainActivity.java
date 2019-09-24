@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int colorNotAcitve, colorAcitve;
     InputMethodManager imm;
 
-    private WebView webView_schedule, webView_cyber;
+    private WebView webView_schedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,14 +68,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabHostSetup();
         setupNoticeTab();
         setupSchedule();
-        setupCyber();
+        setupMain();
         setupLibrary();
         setupSpace();
     }
 
 
 
-    private void setupCyber() {
+    private void setupMain() {
 
     }
 
