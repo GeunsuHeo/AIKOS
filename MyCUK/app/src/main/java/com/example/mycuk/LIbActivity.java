@@ -23,7 +23,7 @@ public class LIbActivity extends AppCompatActivity {
         webViewSetting.setJavaScriptEnabled(true);    // 웹의 자바스크립트 허용
         webViewSetting.setLoadWithOverviewMode(true); // 웹 화면을 디바이스 화면에 맞게 셋팅
         webView.setWebViewClient(new WebViewClient(){}); // 내부 webview로 열기
-
+        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webView.loadUrl(url);  // Load할 url 주소
     }
 
