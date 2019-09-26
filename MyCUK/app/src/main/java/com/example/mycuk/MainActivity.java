@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +18,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -28,12 +31,49 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.impl.cookie.BrowserCompatSpec;
+import org.apache.http.impl.cookie.CookieSpecBase;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     public TabHost tabHost;
@@ -53,6 +93,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private WebView webView_schedule;
 
+    public static HttpClient httpClient = new DefaultHttpClient();
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,12 +109,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+
+
         tabHostSetup();
         setupNoticeTab();
         setupSchedule();
         setupMain();
         setupLibrary();
         setupSpace();
+
+        new Thread(){
+            public void run(){
+                trustAllHosts();
+                login();
+            }
+        }.start();
     }
 
 
@@ -298,8 +351,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // 알림기능 추가
         } else if(v == buttonLibSearch){
             Intent intent = new Intent(getApplicationContext(), LIbActivity.class);
+            String text = editTextLibSearch.getText().toString() != "" ? editTextLibSearch.getText().toString() : "";
             String url = "http://cuk-songsim-primo.hosted.exlibrisgroup.com/primo_library/libweb/action/search.do;jsessionid=88FF20581947A0375D8A6DB3C0420925?fn=search&ct=search&initialSearch=true&mode=Basic&tab=default_tab&indx=1&dum=true&srt=rank&vid=82KST-CUK_SONGSIM&frbg=&vl%28freeText0%29="
-                    + editTextLibSearch.getText().toString() + "&scp.scps=scope%3A%2882KST-CUK_SONGSIM_SFX%29%2Cscope%3A%2882KST-CUK_SONGSIM_LOCAL%29%2Cprimo_central_multiple_fe";
+                    + text + "&scp.scps=scope%3A%2882KST-CUK_SONGSIM_SFX%29%2Cscope%3A%2882KST-CUK_SONGSIM_LOCAL%29%2Cprimo_central_multiple_fe";
             intent.putExtra("url", url); /*송신*/
             startActivity(intent);
         } else if(v == buttonLib1){
@@ -379,6 +433,119 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected void onPostExecute(Void result) {
             mAdapter.updateList(myDataset, myUrl);
         }
+
+
     }
+
+    private void login() {
+        final String TAG = "login";
+        String domain = "https://library.catholic.ac.kr";
+        Log.v(TAG, "login");
+        Log.v(TAG, "token transfer start -------------------");
+        try{
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+            nameValuePairs.add(new BasicNameValuePair("id", URLDecoder.decode("whdauddbs", "UTF-8")));
+            nameValuePairs.add(new BasicNameValuePair("password", URLDecoder.decode("wjd2011", "UTF-8")));
+            nameValuePairs.add(new BasicNameValuePair("loginType", URLDecoder.decode("1", "UTF-8")));
+
+            HttpParams params = new BasicHttpParams();
+
+            HttpPost post = new HttpPost(domain + "/login");
+            post.setParams(params);
+            HttpResponse response = null;
+            BasicResponseHandler myHandler = new BasicResponseHandler();
+            String endResult = null;
+
+            try{
+                post.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
+            } catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
+
+            try{
+                response = httpClient.execute(post);
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+            Log.v(TAG, response.getHeaders("set-cookie").toString());
+
+            try{
+                endResult = myHandler.handleResponse(response);
+            }catch (HttpResponseException e){
+                e.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+            Log.v(TAG, endResult);
+            Log.v(TAG, "Post logon cookies");
+
+            List<Cookie> cookies = ((DefaultHttpClient)httpClient).getCookieStore().getCookies();
+
+            Log.e("cookie", "setSyncCookie start");
+            if(!cookies.isEmpty()){
+                CookieManager cookieManager = CookieManager.getInstance();
+                CookieSyncManager.createInstance(getApplicationContext());
+                cookieManager.setAcceptCookie(true);
+                for(int i = 0; i<cookies.size();i++){
+                    // cookie = cookies.get(i);
+                    String cookieString = cookies.get(i).getName() + "=" + cookies.get(i).getValue();
+
+                    cookieManager.setCookie(domain, cookieString);
+                    cookieManager.setAcceptCookie(true);
+                    Log.e("cookie test : ", cookieString);
+                }
+            }
+            Thread.sleep(500);
+        } catch (Exception ex){
+            ex.printStackTrace();
+            Log.v(TAG, "error!");
+        }
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        CookieSyncManager.getInstance().stopSync();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        CookieSyncManager.getInstance().startSync();
+    }
+
+    private void trustAllHosts() {
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return new java.security.cert.X509Certificate[] {};
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain,
+                                           String authType) throws CertificateException {
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain,
+                                           String authType) throws CertificateException {
+            }
+        }};
+
+        // Install the all-trusting trust manager
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
