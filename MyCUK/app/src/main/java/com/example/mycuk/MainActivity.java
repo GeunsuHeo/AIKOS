@@ -439,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void login() {
         final String TAG = "login";
-        String domain = "https://library.catholic.ac.kr";
+        String domain = "http://library.catholic.ac.kr";
         Log.v(TAG, "login");
         Log.v(TAG, "token transfer start -------------------");
         try{

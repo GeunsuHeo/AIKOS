@@ -50,10 +50,7 @@ public class LIbActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lib);
         trustAllHosts();
-        CookieSyncManager.createInstance(this);
-        cookieManager = CookieManager.getInstance();
 
-/*
         new Thread(){
             public void run(){
                 setupLogin();
@@ -62,7 +59,7 @@ public class LIbActivity extends AppCompatActivity {
         try{
             Thread.sleep(1500);
         } catch (Exception ex){}
-*/
+
         Log.v("login", "2");
         intent = getIntent();
         String url = intent.getExtras().getString("url");
@@ -88,7 +85,7 @@ public class LIbActivity extends AppCompatActivity {
 
     private void setupLogin() {
         final String TAG = "login";
-        String domain = "https://library.catholic.ac.kr";
+        String domain = "http://library.catholic.ac.kr";
         CookieSyncManager.createInstance(this);
         cookieManager = CookieManager.getInstance();
         DefaultHttpClient httpClient = new DefaultHttpClient();
