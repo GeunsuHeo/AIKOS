@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,38 +30,24 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.impl.cookie.BrowserCompatSpec;
-import org.apache.http.impl.cookie.CookieSpecBase;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.cert.CertificateException;
@@ -109,7 +94,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-
+        new Thread(){
+            public void run(){
+                trustAllHosts();
+                login();
+            }
+        }.start();
 
         tabHostSetup();
         setupNoticeTab();
@@ -117,13 +107,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupMain();
         setupLibrary();
         setupSpace();
-
-        new Thread(){
-            public void run(){
-                trustAllHosts();
-                login();
-            }
-        }.start();
     }
 
 
@@ -437,70 +420,76 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void login() {
+    private void login() { // 사캠, 트리니티, 도서관, 학교 홈페이지 쿠키 받기
         final String TAG = "login";
-        String domain = "http://library.catholic.ac.kr";
+        String domain[] = {"http://library.catholic.ac.kr","http://e-cyber.catholic.ac.kr","https://uportal.catholic.ac.kr","https://www.catholic.ac.kr"};
+        String login[] = {"/login", "/ilos/lo/login.acl", "/sso/jsp/sso/ip/login_form.jsp", "/loginprocess.do"};
+        String idName[] = {"id", "usr_id", "userId", "userId"};
+        String pwdName[] = {"password", "usr_pwd","password", "userPw"};
+
         Log.v(TAG, "login");
-        Log.v(TAG, "token transfer start -------------------");
-        try{
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
-            nameValuePairs.add(new BasicNameValuePair("id", URLDecoder.decode("whdauddbs", "UTF-8")));
-            nameValuePairs.add(new BasicNameValuePair("password", URLDecoder.decode("wjd2011", "UTF-8")));
-            nameValuePairs.add(new BasicNameValuePair("loginType", URLDecoder.decode("1", "UTF-8")));
+        for(int i =0;i<4;i++) {
+            Log.v(TAG, "token transfer start -------------------" + i);
+            try {
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(i==0 ? 3 : 2);
+                nameValuePairs.add(new BasicNameValuePair(idName[i], URLDecoder.decode("whdauddbs", "UTF-8")));
+                nameValuePairs.add(new BasicNameValuePair(pwdName[i], URLDecoder.decode("wjd2011", "UTF-8")));
+                if(i==0) nameValuePairs.add(new BasicNameValuePair("loginType", URLDecoder.decode("1", "UTF-8")));
 
-            HttpParams params = new BasicHttpParams();
+                HttpParams params = new BasicHttpParams();
 
-            HttpPost post = new HttpPost(domain + "/login");
-            post.setParams(params);
-            HttpResponse response = null;
-            BasicResponseHandler myHandler = new BasicResponseHandler();
-            String endResult = null;
+                HttpPost post = new HttpPost(domain[i] + login[i]);
+                post.setParams(params);
+                HttpResponse response = null;
+                BasicResponseHandler myHandler = new BasicResponseHandler();
+                String endResult = null;
 
-            try{
-                post.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
-            } catch (UnsupportedEncodingException e){
-                e.printStackTrace();
-            }
-
-            try{
-                response = httpClient.execute(post);
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-            Log.v(TAG, response.getHeaders("set-cookie").toString());
-
-            try{
-                endResult = myHandler.handleResponse(response);
-            }catch (HttpResponseException e){
-                e.printStackTrace();
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-            Log.v(TAG, endResult);
-            Log.v(TAG, "Post logon cookies");
-
-            List<Cookie> cookies = ((DefaultHttpClient)httpClient).getCookieStore().getCookies();
-
-            Log.e("cookie", "setSyncCookie start");
-            if(!cookies.isEmpty()){
-                CookieManager cookieManager = CookieManager.getInstance();
-                CookieSyncManager.createInstance(getApplicationContext());
-                cookieManager.setAcceptCookie(true);
-                for(int i = 0; i<cookies.size();i++){
-                    // cookie = cookies.get(i);
-                    String cookieString = cookies.get(i).getName() + "=" + cookies.get(i).getValue();
-
-                    cookieManager.setCookie(domain, cookieString);
-                    cookieManager.setAcceptCookie(true);
-                    Log.e("cookie test : ", cookieString);
+                try {
+                    post.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
+
+                try {
+                    response = httpClient.execute(post);
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Log.v(TAG, response.getHeaders("set-cookie").toString());
+
+                try {
+                    endResult = myHandler.handleResponse(response);
+                } catch (HttpResponseException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Log.v(TAG, endResult);
+                Log.v(TAG, "Post logon cookies");
+
+                List<Cookie> cookies = ((DefaultHttpClient) httpClient).getCookieStore().getCookies();
+
+                Log.e("cookie", "setSyncCookie start");
+                if (!cookies.isEmpty()) {
+                    CookieManager cookieManager = CookieManager.getInstance();
+                    CookieSyncManager.createInstance(getApplicationContext());
+                    cookieManager.setAcceptCookie(true);
+                    for (int j = 0; j < cookies.size(); j++) {
+                        // cookie = cookies.get(i);
+                        String cookieString = cookies.get(j).getName() + "=" + cookies.get(j).getValue();
+
+                        cookieManager.setCookie(domain[i], cookieString);
+                        cookieManager.setAcceptCookie(true);
+                        Log.e("cookie test : ", cookieString);
+                    }
+                }
+                Thread.sleep(500);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.v(TAG, "error!");
             }
-            Thread.sleep(500);
-        } catch (Exception ex){
-            ex.printStackTrace();
-            Log.v(TAG, "error!");
         }
     }
 
