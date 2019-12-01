@@ -432,8 +432,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.v(TAG, "token transfer start -------------------" + i);
             try {
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(i==0 ? 3 : 2);
-                nameValuePairs.add(new BasicNameValuePair(idName[i], URLDecoder.decode("whdauddbs", "UTF-8")));
-                nameValuePairs.add(new BasicNameValuePair(pwdName[i], URLDecoder.decode("wjd2011", "UTF-8")));
+                nameValuePairs.add(new BasicNameValuePair(idName[i], URLDecoder.decode("ID", "UTF-8")));
+                nameValuePairs.add(new BasicNameValuePair(pwdName[i], URLDecoder.decode("PWD", "UTF-8")));
                 if(i==0) nameValuePairs.add(new BasicNameValuePair("loginType", URLDecoder.decode("1", "UTF-8")));
 
                 HttpParams params = new BasicHttpParams();
