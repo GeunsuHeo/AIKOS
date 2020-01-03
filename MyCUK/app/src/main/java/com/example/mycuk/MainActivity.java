@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     InputMethodManager imm;
 
     private WebView webView_schedule;
-
     public static HttpClient httpClient = new DefaultHttpClient();
 
 
