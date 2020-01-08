@@ -9,12 +9,16 @@ import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
@@ -59,11 +63,14 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    private DrawerLayout mDrawerLayout;
     public TabHost tabHost;
 
-    private String preUrl,url,postUrl,midUrl,baseUrl,sectionNum,pageNum,searchValue;
+    private String preUrl,url,postUrl,midUrl,baseUrl,sectionNum,pageNum,searchValue,user_id,user_pw;
     private RecyclerView recyclerView;
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -80,12 +87,91 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static HttpClient httpClient = new DefaultHttpClient();
 
+    private boolean login_check = false;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        // DRAWER SETTING
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+
+        Intent intent = getIntent();                                //login_page 갔다오면 id와 pw정보 가져옴
+
+        user_id = intent.getExtras().getString("login_id");
+        user_pw = intent.getExtras().getString("login_pw");
+
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                menuItem.setChecked(true);
+                mDrawerLayout.closeDrawers();
+
+                int id = menuItem.getItemId();
+
+//                if(id == R.id.navigation_item_login)
+//                {
+//                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//                    startActivity(intent);
+//                }
+
+                switch (id) {
+                    case R.id.navigation_item_login:
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case R.id.navigation_item_images:
+                        Toast.makeText(MainActivity.this, menuItem.getTitle(), Toast.LENGTH_LONG).show();
+                        break;
+
+                    case R.id.navigation_item_location:
+                        Toast.makeText(MainActivity.this, menuItem.getTitle(), Toast.LENGTH_LONG).show();
+                        break;
+
+                    case R.id.nav_sub_menu_item01:
+                        Toast.makeText(MainActivity.this, menuItem.getTitle(), Toast.LENGTH_LONG).show();
+                        break;
+
+                    case R.id.nav_sub_menu_item02:
+                        Toast.makeText(MainActivity.this, menuItem.getTitle(), Toast.LENGTH_LONG).show();
+                        break;
+
+                }
+
+                return true;
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET)) {
@@ -431,9 +517,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for(int i =0;i<4;i++) {
             Log.v(TAG, "token transfer start -------------------" + i);
             try {
+
+
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(i==0 ? 3 : 2);
-                nameValuePairs.add(new BasicNameValuePair(idName[i], URLDecoder.decode("ID", "UTF-8")));
-                nameValuePairs.add(new BasicNameValuePair(pwdName[i], URLDecoder.decode("PWD", "UTF-8")));
+                nameValuePairs.add(new BasicNameValuePair(idName[i], URLDecoder.decode(user_id, "UTF-8")));
+                nameValuePairs.add(new BasicNameValuePair(pwdName[i], URLDecoder.decode(user_pw, "UTF-8")));
                 if(i==0) nameValuePairs.add(new BasicNameValuePair("loginType", URLDecoder.decode("1", "UTF-8")));
 
                 HttpParams params = new BasicHttpParams();

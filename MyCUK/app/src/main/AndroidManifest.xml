@@ -18,6 +18,7 @@
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
         <activity android:name=".LIbActivity"></activity>
         <activity android:name=".SpaceActivity"></activity>
+        <activity android:name=".LoginActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustNothing">
